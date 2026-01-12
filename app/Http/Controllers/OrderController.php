@@ -56,7 +56,14 @@ class OrderController extends Controller
             
             $existingOrder->save();
             
-            return response()->json(['success' => true, 'order_id' => $existingOrder->id, 'merged' => true]);
+            $response = ['success' => true, 'order_id' => $existingOrder->id, 'merged' => true];
+
+            // If user chose to pay now via PayWay, redirect them to pay the UPDATED total
+            if (isset($validated['payment_method']) && $validated['payment_method'] === 'aba_payway') {
+                $response['redirect_url'] = route('payment.pay', ['order' => $existingOrder->id]);
+            }
+            
+            return response()->json($response);
         } else {
             // Create new order
             $validated['status'] = 'pending';
@@ -64,7 +71,13 @@ class OrderController extends Controller
             $validated['payment_method'] = $validated['payment_method'] ?? 'cash';
             $order = Order::create($validated);
             
-            return response()->json(['success' => true, 'order_id' => $order->id, 'merged' => false]);
+            $response = ['success' => true, 'order_id' => $order->id, 'merged' => false];
+            
+            if ($validated['payment_method'] === 'aba_payway') {
+                $response['redirect_url'] = route('payment.pay', ['order' => $order->id]);
+            }
+            
+            return response()->json($response);
         }
     }
 

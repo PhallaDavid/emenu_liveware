@@ -23,6 +23,9 @@ Route::get('/menu/{table?}', [MenuController::class, 'show'])->name('menu.show')
 Route::post('/order', [OrderController::class, 'store'])->name('order.store');
 Route::get('/order/{order}/status', [OrderController::class, 'status'])->name('order.status');
 Route::post('/call-waiter', [OrderController::class, 'callWaiter'])->name('order.call-waiter');
+Route::get('/payment/{order}/pay', [App\Http\Controllers\PaymentController::class, 'pay'])->name('payment.pay');
+Route::match(['get', 'post'], '/payment/callback', [App\Http\Controllers\PaymentController::class, 'callback'])->name('payment.callback');
+Route::get('/payment/{order}/success', [App\Http\Controllers\PaymentController::class, 'success'])->name('payment.success');
 Route::get('/lang/{locale}', function ($locale) {
     if (in_array($locale, ['en', 'km'])) {
         session()->put('locale', $locale);
