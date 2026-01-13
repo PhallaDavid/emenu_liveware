@@ -43,6 +43,9 @@ Route::middleware(['auth'])->group(function () {
     // User Management (Admin only)
     Route::middleware(['role:admin'])->group(function () {
         Route::resource('users', App\Http\Controllers\Admin\UserController::class);
+        Route::resource('roles', App\Http\Controllers\Admin\RoleController::class);
+        Route::get('roles/{role}/permissions', [App\Http\Controllers\Admin\RoleController::class, 'edit'])->name('roles.permissions');
+        Route::post('roles/{role}/permissions', [App\Http\Controllers\Admin\RoleController::class, 'updatePermissions'])->name('roles.permissions.update');
     });
 
     Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class);

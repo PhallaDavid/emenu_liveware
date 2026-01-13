@@ -1,0 +1,28 @@
+    @push('scripts')
+    <script>
+        // Auto-refresh tables grid every 10 seconds to show real-time order updates
+        setInterval(function() {
+            if (!window.location.pathname.includes('/tables')) {
+                return;
+            }
+            
+            fetch(window.location.href)
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    
+                    // Update the tables grid
+                    const currentGrid = document.querySelector('.grid.grid-cols-2');
+                    const newGrid = doc.querySelector('.grid.grid-cols-2');
+                    
+                    if (currentGrid && newGrid && currentGrid.innerHTML !== newGrid.innerHTML) {
+                        currentGrid.innerHTML = newGrid.innerHTML;
+                        console.log('Tables grid updated');
+                    }
+                })
+                .catch(err => console.error('Error refreshing tables:', err));
+        }, 10000); // Refresh every 10 seconds
+    </script>
+    @endpush
+</x-app-layout>

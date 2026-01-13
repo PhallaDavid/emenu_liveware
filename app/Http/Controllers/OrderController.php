@@ -35,7 +35,11 @@ class OrderController extends Controller
                 $found = false;
                 foreach ($mergedItems as &$existingItem) {
                     if ($existingItem['id'] == $newItem['id']) {
-                        $existingItem['qty'] += $newItem['qty'];
+                        // Normalize keys
+                        $existingQty = $existingItem['qty'] ?? $existingItem['quantity'] ?? 0;
+                        $newQty = $newItem['qty'] ?? $newItem['quantity'] ?? 0;
+                        
+                        $existingItem['qty'] = $existingQty + $newQty;
                         $found = true;
                         break;
                     }

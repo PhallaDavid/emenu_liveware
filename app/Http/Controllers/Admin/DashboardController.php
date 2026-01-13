@@ -38,13 +38,20 @@ class DashboardController extends Controller
             ->orderBy('month')
             ->get();
 
-        $months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        $months = [
+            __('messages.jan'), __('messages.feb'), __('messages.mar'), __('messages.apr'), 
+            __('messages.may'), __('messages.jun'), __('messages.jul'), __('messages.aug'), 
+            __('messages.sep'), __('messages.oct'), __('messages.nov'), __('messages.dec')
+        ];
         $revenueData = array_fill(0, 12, 0);
 
         foreach ($monthlyRevenue as $record) {
             $revenueData[$record->month - 1] = $record->total;
         }
 
-        return view('admin.dashboard', compact('stats', 'chartData', 'months', 'revenueData'));
+        $recentOrders = Order::latest()->take(5)->get();
+        $recentProducts = Product::with('category')->latest()->take(5)->get();
+
+        return view('admin.dashboard', compact('stats', 'chartData', 'months', 'revenueData', 'recentOrders', 'recentProducts'));
     }
 }

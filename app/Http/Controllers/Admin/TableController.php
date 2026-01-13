@@ -9,13 +9,16 @@ class TableController extends Controller
 {
     private function getActiveOrder($tableName)
     {
-        // Handle "Table 1" vs "1" mismatch
-        return \App\Models\Order::where(function($q) use ($tableName) {
+        // Remove "Table " or "តុ " prefixes to get the raw number/ID
+        $strippedName = trim(preg_replace('/^(Table|តុ)\s+/iu', '', $tableName));
+        
+        return \App\Models\Order::where(function($q) use ($tableName, $strippedName) {
                 $q->where('table_number', $tableName)
-                  ->orWhere('table_number', preg_replace('/^Table\s+/i', '', $tableName));
+                  ->orWhere('table_number', $strippedName)
+                  ->orWhere('table_number', 'Table ' . $strippedName)
+                  ->orWhere('table_number', 'តុ ' . $strippedName);
             })
-            ->where('status', '!=', 'completed')
-            ->where('status', '!=', 'cancelled')
+            ->whereIn('status', ['pending', 'completed']) // 'paid' orders are no longer active
             ->latest()
             ->first();
     }
@@ -41,13 +44,14 @@ class TableController extends Controller
         return back()->with('success', 'Table status updated.');
     }
 
-    public function checkout(\App\Models\Table $table)
+    public function checkout(Request $request, \App\Models\Table $table)
     {
         // Find active order
         $order = $this->getActiveOrder($table->name);
 
         if ($order) {
-            $order->status = 'completed';
+            $order->status = 'paid';
+            $order->payment_method = $request->payment_method ?? 'cash';
             $order->save();
         }
 
@@ -93,7 +97,7 @@ class TableController extends Controller
         if (!$order) {
             // Use stripped name ("1" instead of "Table 1") for consistency
              $order = \App\Models\Order::create([
-                'table_number' => preg_replace('/^Table\s+/i', '', $table->name),
+                'table_number' => trim(preg_replace('/^(Table|តុ)\s+/iu', '', $table->name)),
                 'total_price' => 0,
                 'status' => 'pending',
                 'items' => [],
@@ -105,8 +109,13 @@ class TableController extends Controller
         
         $found = false;
         foreach ($items as &$item) {
+            // Normalize key if it's old format
+            if (!isset($item['qty']) && isset($item['quantity'])) {
+                $item['qty'] = $item['quantity'];
+            }
+            
             if ($item['id'] == $product->id) {
-                $item['quantity'] += 1;
+                $item['qty'] = ($item['qty'] ?? 0) + 1;
                 $found = true;
                 break;
             }
@@ -116,14 +125,27 @@ class TableController extends Controller
                 'id' => $product->id,
                 'name' => $product->name,
                 'price' => $product->price,
-                'quantity' => 1,
+                'qty' => 1,
                 'image' => $product->image // Optional
             ];
         }
 
         $order->items = $items;
-        $order->total_price = collect($items)->sum(fn($i) => $i['price'] * $i['quantity']);
+        $order->total_price = collect($items)->sum(function($i) {
+            $price = $i['price'] ?? 0;
+            $qty = $i['qty'] ?? $i['quantity'] ?? 0;
+            return $price * $qty;
+        });
         $order->save();
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Item added successfully.',
+                'order' => $order,
+                'table' => $table
+            ]);
+        }
 
         return back()->with('success', 'Item added successfully.');
     }
