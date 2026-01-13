@@ -49,11 +49,16 @@ class OrderController extends Controller
             $existingOrder->items = $mergedItems;
             $existingOrder->total_price += $validated['total_price'];
             
+            // Reset status to pending since there are new items to prepare
+            $existingOrder->status = 'pending';
+            
             // Append new instructions if any
             if (!empty($validated['special_instructions'])) {
                 $existingOrder->special_instructions = trim(($existingOrder->special_instructions ?? '') . "\n" . $validated['special_instructions']);
             }
             
+            // Touch updated_at to show this order was recently modified
+            $existingOrder->touch();
             $existingOrder->save();
             
             $response = ['success' => true, 'order_id' => $existingOrder->id, 'merged' => true];
@@ -80,6 +85,7 @@ class OrderController extends Controller
             return response()->json($response);
         }
     }
+
 
     public function status(Order $order)
     {

@@ -1,8 +1,8 @@
 <x-app-layout>
     <div class="mb-8 flex justify-between items-end">
         <div>
-            <h2 class="text-3xl font-bold text-gray-800 dark:text-white">Hello, {{ Auth::user()->name }}</h2>
-            <p class="text-gray-500 dark:text-gray-400">Here's what's happening in your restaurant today.</p>
+            <h2 class="text-3xl font-bold text-gray-800 dark:text-white">{{ __('messages.hello') }}, {{ Auth::user()->name }}</h2>
+            <p class="text-gray-500 dark:text-gray-400">{{ __('messages.dashboard_desc') }}</p>
         </div>
     </div>
 
@@ -20,12 +20,12 @@
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
                     <div>
-                        <h4 class="font-bold text-yellow-900 dark:text-yellow-100">Pending Orders Detected</h4>
-                        <p class="text-sm text-yellow-700 dark:text-yellow-300">There are <span class="font-bold" x-text="count"></span> orders waiting for preparation!</p>
+                        <h4 class="font-bold text-yellow-900 dark:text-yellow-100">{{ __('messages.pending_orders_detected') }}</h4>
+                        <p class="text-sm text-yellow-700 dark:text-yellow-300">{{ __('messages.pending_orders_desc', ['count' => '']) }} <span class="font-bold" x-text="count"></span></p>
                     </div>
                 </div>
                 <a href="{{ route('orders.index') }}" class="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 px-6 py-2 rounded-xl font-bold transition-all shadow-md">
-                    Handle Now
+                    {{ __('messages.handle_now') }}
                 </a>
             </div>
         </template>
@@ -35,7 +35,7 @@
         <!-- Card 1 -->
         <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-between">
             <div>
-                <p class="text-gray-500 dark:text-gray-400 text-sm font-medium uppercase">Today's Orders</p>
+                <p class="text-gray-500 dark:text-gray-400 text-sm font-medium uppercase">{{ __('messages.todays_orders') }}</p>
                 <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-100">{{ $stats['orders'] }}</h3>
             </div>
             <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded-full flex items-center justify-center">
@@ -46,7 +46,7 @@
         <!-- Card 2 -->
         <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-between">
             <div>
-                <p class="text-gray-500 dark:text-gray-400 text-sm font-medium uppercase">Today's Revenue</p>
+                <p class="text-gray-500 dark:text-gray-400 text-sm font-medium uppercase">{{ __('messages.todays_revenue') }}</p>
                 <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-100">${{ number_format($stats['revenue'], 2) }}</h3>
             </div>
             <div class="w-12 h-12 bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 rounded-full flex items-center justify-center">
@@ -57,7 +57,7 @@
         <!-- Card 3 -->
         <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-between">
             <div>
-                <p class="text-gray-500 dark:text-gray-400 text-sm font-medium uppercase">Total Products</p>
+                <p class="text-gray-500 dark:text-gray-400 text-sm font-medium uppercase">{{ __('messages.total_products') }}</p>
                 <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-100">{{ $stats['products'] }}</h3>
             </div>
             <div class="w-12 h-12 bg-orange-100 dark:bg-orange-900 text-orange-600 dark:text-orange-300 rounded-full flex items-center justify-center">
@@ -68,7 +68,7 @@
         <!-- Card 4 -->
         <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-between">
             <div>
-                <p class="text-gray-500 dark:text-gray-400 text-sm font-medium uppercase">Active Categories</p>
+                <p class="text-gray-500 dark:text-gray-400 text-sm font-medium uppercase">{{ __('messages.active_categories') }}</p>
                 <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-100">{{ $stats['categories'] }}</h3>
             </div>
             <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 rounded-full flex items-center justify-center">
@@ -80,7 +80,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <!-- Sales Chart (Doughnut) -->
         <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
-            <h3 class="text-lg font-bold mb-4 dark:text-white">Product Distribution</h3>
+            <h3 class="text-lg font-bold mb-4 dark:text-white">{{ __('messages.product_distribution') }}</h3>
             <div style="height: 200px; position: relative;">
                 <canvas id="salesChart"></canvas>
             </div>
@@ -88,7 +88,7 @@
 
         <!-- Revenue Chart (Bar) -->
         <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
-            <h3 class="text-lg font-bold mb-4 dark:text-white">Monthly Revenue</h3>
+            <h3 class="text-lg font-bold mb-4 dark:text-white">{{ __('messages.monthly_revenue') }}</h3>
             <div style="height: 200px; position: relative;">
                 <canvas id="revenueChart"></canvas>
             </div>
@@ -97,20 +97,20 @@
     
     <!-- Quick Actions -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <a href="{{ route('products.create') }}" class="block p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-2xl text-center hover:border-black dark:hover:border-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-all group">
-                <div class="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-white dark:group-hover:bg-gray-600">
-                    <svg class="w-6 h-6 text-gray-500 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+            <a href="{{ route('products.create') }}" class="block p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-2xl text-center hover:border-blue-600 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all group">
+                <div class="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-blue-600 dark:group-hover:bg-blue-600">
+                    <svg class="w-6 h-6 text-gray-500 dark:text-gray-400 group-hover:text-white dark:group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                 </div>
-                <h3 class="font-bold text-gray-900 dark:text-white">Add New Product</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Update your everyday menu</p>
+                <h3 class="font-bold text-gray-900 dark:text-white">{{ __('messages.add_new_product') }}</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('messages.update_menu_desc') }}</p>
             </a>
 
-            <a href="{{ route('categories.create') }}" class="block p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-2xl text-center hover:border-black dark:hover:border-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-all group">
-                <div class="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-white dark:group-hover:bg-gray-600">
-                     <svg class="w-6 h-6 text-gray-500 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+            <a href="{{ route('categories.create') }}" class="block p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-2xl text-center hover:border-blue-600 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all group">
+                <div class="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-blue-600 dark:group-hover:bg-blue-600">
+                     <svg class="w-6 h-6 text-gray-500 dark:text-gray-400 group-hover:text-white dark:group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                 </div>
-                <h3 class="font-bold text-gray-900 dark:text-white">Create Category</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Organize your menu structure</p>
+                <h3 class="font-bold text-gray-900 dark:text-white">{{ __('messages.create_category') }}</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('messages.organize_menu_desc') }}</p>
             </a>
     </div>
 

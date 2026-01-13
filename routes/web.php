@@ -59,4 +59,9 @@ Route::middleware(['auth'])->group(function () {
             'waiter_calls' => \App\Models\Order::where('is_calling_waiter', true)->count()
         ]);
     });
+
+    Route::post('tables/{table}/toggle-status', [App\Http\Controllers\Admin\TableController::class, 'toggleStatus'])->name('tables.toggle-status');
+    Route::post('tables/{table}/checkout', [App\Http\Controllers\Admin\TableController::class, 'checkout'])->name('tables.checkout');
+    Route::post('tables/{table}/add-item', [App\Http\Controllers\Admin\TableController::class, 'addItem'])->name('tables.add-item');
+    Route::resource('tables', App\Http\Controllers\Admin\TableController::class);
 });

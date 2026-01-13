@@ -17,6 +17,11 @@
                 <div>
                     <h3 class="font-bold {{ $order->is_calling_waiter ? 'text-white' : 'dark:text-white' }}">Table {{ $order->table_number }}</h3>
                     <p class="text-[10px] {{ $order->is_calling_waiter ? 'text-white/80' : 'text-gray-400' }} uppercase tracking-widest">{{ $order->created_at->format('H:i') }} ({{ $order->created_at->diffForHumans() }})</p>
+                    @if($order->updated_at->diffInMinutes($order->created_at) > 0 && $order->updated_at->diffInMinutes() < 2)
+                    <span class="inline-block mt-1 px-2 py-0.5 text-[9px] rounded-full font-black uppercase bg-orange-500 text-white animate-pulse">
+                        ⚡ UPDATED {{ $order->updated_at->diffForHumans() }}
+                    </span>
+                    @endif
                 </div>
                 @if($order->is_calling_waiter)
                 <div class="flex items-center gap-2">
@@ -83,21 +88,84 @@
 
     @push('scripts')
     <script>
-        setInterval(function() {
-            if (window.location.pathname.includes('/kitchen')) {
-                fetch(window.location.href)
-                    .then(response => response.text())
-                    .then(html => {
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(html, 'text/html');
-                        const grid = document.querySelector('.orders-grid');
-                        const newGrid = doc.querySelector('.orders-grid');
-                        if (grid && newGrid && grid.innerHTML !== newGrid.innerHTML) {
-                           grid.innerHTML = newGrid.innerHTML;
-                        }
-                    });
+        let previousOrdersHTML = '';
+        let audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZURE');
+        
+        function checkForNewOrders() {
+            if (!window.location.pathname.includes('/kitchen')) {
+                console.log('Not on kitchen page, skipping check');
+                return;
             }
-        }, 10000); // Kitchen updates more frequently
+            
+            console.log('Checking for new orders...');
+            
+            fetch(window.location.href)
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const grid = document.querySelector('.orders-grid');
+                    const newGrid = doc.querySelector('.orders-grid');
+                    
+                    if (grid && newGrid) {
+                        const newHTML = newGrid.innerHTML;
+                        
+                        console.log('Previous HTML length:', previousOrdersHTML.length);
+                        console.log('New HTML length:', newHTML.length);
+                        
+                        // Check if content changed
+                        if (previousOrdersHTML && previousOrdersHTML !== newHTML) {
+                            console.log('🔔 CHANGE DETECTED! Triggering alerts...');
+                            
+                            // Flash the screen
+                            document.body.style.backgroundColor = '#fef3c7';
+                            setTimeout(() => {
+                                document.body.style.backgroundColor = '';
+                            }, 300);
+                            
+                            // Play alert sound
+                            audio.play().catch(e => console.log('Audio play failed:', e));
+                            
+                            // Show notification
+                            showNotification('🔔 New Order Update!');
+                        } else if (previousOrdersHTML) {
+                            console.log('No changes detected');
+                        } else {
+                            console.log('First load - setting baseline');
+                        }
+                        
+                        previousOrdersHTML = newHTML;
+                        grid.innerHTML = newHTML;
+                    } else {
+                        console.error('Grid not found!', {grid: !!grid, newGrid: !!newGrid});
+                    }
+                })
+                .catch(err => console.error('Error fetching orders:', err));
+        }
+        
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-yellow-500 text-white px-6 py-4 rounded-lg shadow-2xl z-50 animate-bounce font-bold';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+        
+        // Initial load
+        console.log('Kitchen display initialized');
+        setTimeout(() => {
+            const grid = document.querySelector('.orders-grid');
+            if (grid) {
+                previousOrdersHTML = grid.innerHTML;
+                console.log('Baseline set, HTML length:', previousOrdersHTML.length);
+            } else {
+                console.error('Grid not found on initial load!');
+            }
+        }, 1000);
+        
+        // Check every 5 seconds for faster updates
+        setInterval(checkForNewOrders, 5000);
+        console.log('Auto-refresh started (every 5 seconds)');
     </script>
     @endpush
 </x-app-layout>

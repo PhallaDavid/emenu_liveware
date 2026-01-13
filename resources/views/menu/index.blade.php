@@ -12,36 +12,34 @@
             </div>
 
             <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between gap-4">
+                <!-- Logo on Left -->
                 <div class="flex-shrink-0">
-                    <button @click="callWaiter()"
-                        class="bg-gray-100 text-gray-800 p-2 rounded-xl flex items-center gap-2 hover:bg-gray-200 active:scale-95 transition-all"
-                        :class="waiterCalled ? 'bg-primary text-white' : ''">
-                        <svg class="w-4 h-4" :class="waiterCalled ? 'animate-bounce' : ''" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
-                            </path>
-                        </svg>
-                        <span class="text-[10px] font-bold uppercase tracking-widest hidden sm:inline"
-                            x-text="waiterCalled ? '{{ __('messages.coming') }}' : '{{ __('messages.waiter') }}'"></span>
-                    </button>
+                    <img src="{{ asset('images/Gemini_Generated_Image_eb56d7eb56d7eb56.png') }}" 
+                         alt="Logo" 
+                         class="h-10 w-10 object-contain">
                 </div>
 
+                <!-- Title in Center -->
                 <div class="text-center flex-1">
                     <h1 class="font-bold text-base text-gray-800 leading-none">{{ __('messages.menu') }}</h1>
                     <p class="text-[10px] text-gray-500 mt-0.5">{{ __('messages.table') }} <span x-text="table"></span>
                     </p>
                 </div>
 
-                <div class="relative flex-shrink-0">
-                    <input type="text" x-model="search" placeholder="{{ __('messages.search') }}..."
-                        class="bg-gray-100 rounded-full px-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary/50 w-24 transition-all focus:w-32 pr-8">
-                    <button x-show="search.length > 0" @click="search = ''"
-                        class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <!-- Call Waiter Icon on Right -->
+                <div class="flex-shrink-0 relative">
+                    <button @click="callWaiter()"
+                        class="p-2 rounded-full flex items-center justify-center hover:bg-gray-100 active:scale-95 transition-all relative"
+                        :class="waiterCalled ? 'bg-primary text-white' : 'bg-gray-100 text-gray-800'">
+                        <svg class="w-5 h-5" :class="waiterCalled ? 'animate-bounce' : ''" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"></path>
+                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+                            </path>
                         </svg>
+                        <!-- Notification Dot -->
+                        <span x-show="waiterCalled" 
+                              class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
                     </button>
                 </div>
             </div>
@@ -62,6 +60,24 @@
                             </div>
                         @endforeach
                     </div>
+                </div>
+            </div>
+
+            <!-- Search Bar Below Categories -->
+            <div class="max-w-md mx-auto px-4 pb-3">
+                <div class="relative">
+                    <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <input type="text" x-model="search" placeholder="{{ __('messages.search') }}..."
+                        class="w-full bg-gray-100 rounded-full pl-10 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all">
+                    <button x-show="search.length > 0" @click="search = ''"
+                        class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
                 </div>
             </div>
 
@@ -90,8 +106,8 @@
                             </div>
 
                             <div>
-                                <h4 class="text-xs font-black uppercase tracking-widest opacity-60 leading-none mb-1">
-                                    {{ __('messages.live_update') }}</h4>
+                                {{-- <h4 class="text-xs font-black uppercase tracking-widest opacity-60 leading-none mb-1">
+                                    {{ __('messages.live_update') }}</h4> --}}
                                 <p class="font-bold text-sm tracking-tight" x-text="getStatusMessage()"></p>
                             </div>
                         </div>
